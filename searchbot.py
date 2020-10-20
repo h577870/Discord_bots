@@ -1,9 +1,11 @@
 import os
+import random
 from discord.ext import commands
 from dotenv import load_dotenv
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
+guild_id = os.getenv('DISCORD_1')
 
 bot = commands.Bot(command_prefix='!')
 bot.remove_command('help')
@@ -13,6 +15,7 @@ async def on_ready():
 	print(
 		f'{bot.user.name} has connected to Discord!'
 	)
+	print(bot.guilds)
 
 @bot.event
 async def on_member_join(member):
@@ -20,7 +23,21 @@ async def on_member_join(member):
 	await member.dm_channel.send(
 		f'Welcome {member.name} to my Discord Server!'
 	)
-	
+
+@bot.event
+async def on_member_update(before, after):
+	online_list = [
+		f"Oh lord, {before.name} is here :monkaChrist: ",
+		f"Ajt, {before.name} er endelig her :pepeOK: ",
+		f"{before.name} :Pepega: "
+	]
+	random_str = random.choice(online_list)
+	# offline -> online
+	if str(before.status) == "offline":
+		if str(after.status) == "online":
+			guild = bot.get_guild(int(guild_id))
+			await guild.text_channels[0].send(random_str)
+			
 # Litt finere formatering hadde gjort susen.
 @bot.command(name='help')
 async def helper(ctx):
